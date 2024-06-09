@@ -1,11 +1,89 @@
----
-title: "Reproducible Data"
-author: "Oziel Hinojosa"
-date: "`r Sys.Date()`"
-output: html_document
----
+
+# Reproducible Data Week 2 Assigment
+
+author: Oziel Hinojosa
+
+date: `r Sys.Date()` 
+
+
+
+
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r echo=FALSE, results='hide', message=FALSE}
+#loading libs to manipulate and display the data
+library(dplyr)
+library(ggplot2)
+```
+
+
+```{r echo=FALSE, results='hide', message=FALSE}
+## Data Exploration via Excel
+## Create the necessary data sets to report out the questions
+## What is mean total number of steps taken per day?
+
+df <- read.csv("activity.csv", header = TRUE, colClasses = c("integer", "Date", "integer"))
+
+dailySteps <- df %>% select(date, steps) %>% 
+  
+  group_by(date) %>% summarise(totalSteps = sum(steps))
+
+## Have to remove NA's otherwise result is NA
+dStepsMean <- mean(dailySteps$totalSteps, na.rm = TRUE)
+dStepsMedian <- median(dailySteps$totalSteps, na.rm = TRUE)
+```
+<br>
+
+# 
+## What is mean total number of steps taken per day?
+
+<br>
+
+*Plot - Total Steps per Day*
+
+```{r echo=FALSE, results='hide', message=FALSE}
+ggplot(data = dailySteps, aes(x = totalSteps)) +
+  geom_histogram() +
+  labs(x = "Total Steps", y="Frequency")
+
+```
+<br>
+
+##### The mean is `r format(dStepsMean, nsmall = 3)` .
+
+##### The median is `r format(dStepsMedian, nsmall = 3)` .
+
+
+<br>
+<br>
+
+  
+
+## What is the average daily activity pattern?
+
+```{r echo=FALSE, results='hide', message=FALSE}
+# Calculate average steps per interval
+avgSteps <- df %>% select(date, steps, interval) %>% 
+  group_by(interval) %>% summarise(avgSteps = mean(steps, na.rm = TRUE))
+
+ggplot(avgSteps, aes(x=interval, y=avgSteps)) +
+    geom_line() +
+    xlab("5-minute interval") +
+    ylab("average number of steps taken") 
+
+maxInterval <- avgSteps$interval[which.max(avgSteps$avgSteps)]
+
+
+```
+
+##### The interval with the greats number of stes on average is `r format(maxInterval, nsmall = 3)` .
+
+<br>
+<br>
+```{r echo=FALSE, results='hide', message=FALSE}
+
 ```
 
