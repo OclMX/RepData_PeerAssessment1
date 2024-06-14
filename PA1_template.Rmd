@@ -1,3 +1,5 @@
+
+
 ---
 title: "Reproducible Research: Peer Assessment 1"
 output: 
@@ -6,20 +8,154 @@ output:
 ---
 
 
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r echo=TRUE, results='hide', message=FALSE}
+#loading libs to manipulate and display the data
+library(dplyr)
+library(ggplot2)
+```
+<br>
+
 ## Loading and preprocessing the data
 
+```{r echo=TRUE, results='hide', message=FALSE}
+## Data Exploration via Excel
+## Create the necessary data sets to report out the questions
 
+
+df <- read.csv("activity.csv", header = TRUE, colClasses = c("integer", "Date", "integer"))
+```
+
+
+```{r echo=FALSE, results='hide', message=FALSE}
 
 ## What is mean total number of steps taken per day?
 
 
+dailySteps <- df %>% select(date, steps) %>% 
+  
+  group_by(date) %>% summarise(totalSteps = sum(steps, na.rm = TRUE))
+
+## Have to remove NA's otherwise result is NA
+dStepsMean <- mean(dailySteps$totalSteps, na.rm = TRUE)
+dStepsMedian <- median(dailySteps$totalSteps, na.rm = TRUE)
+```
+<br>
+
+# 
+## What is mean total number of steps taken per day?
+
+<br>
+
+*Plot - Total Steps per Day*
+
+```{r echo=FALSE, results='hide', message=FALSE}
+ggplot(data = dailySteps, aes(x = totalSteps)) +
+  geom_histogram() +
+  labs(x = "Total Steps", y="Frequency")
+
+```
+<br>
+
+##### The mean is `r format(dStepsMean, nsmall = 3)` .
+
+##### The median is `r format(dStepsMedian, nsmall = 3)` .
+
+
+<br>
+<br>
+
+  
 
 ## What is the average daily activity pattern?
 
+```{r echo=FALSE, results='hide', message=FALSE}
+# Calculate average steps per interval
+avgSteps <- df %>% select(date, steps, interval) %>% 
+  group_by(interval) %>% summarise(avgSteps = mean(steps, na.rm = TRUE))
 
+ggplot(avgSteps, aes(x=interval, y=avgSteps)) +
+    geom_line() +
+    xlab("5-minute interval") +
+    ylab("average number of steps taken") 
+
+maxInterval <- avgSteps$interval[which.max(avgSteps$avgSteps)]
+
+
+```
+
+##### The interval with the greats number of stes on average is `r format(maxInterval, nsmall = 3)` .
+
+<br>
+<br>
 
 ## Imputing missing values
 
+<br>
+
+```{r echo=FALSE, results='hide', message=FALSE}
+
+#Simply get the sum of row with NAs
+
+nbrNAs <- sum(is.na(df$steps))
+
+#Create a new dataframe
+
+dfMeanNA <- df
+# I am sure there is a fancier way. But apply, impute, dply mutate/case are a bit advanced. 
+for (i in 1:nrow(dfMeanNA)){
+  if(is.na(dfMeanNA$steps[i])){
+    dfMeanNA$steps[i]<- avgSteps$avgSteps[dfMeanNA$interval[i] == avgSteps$interval]
+  }
+}
+
+dailyStepsNoNAs <- dfMeanNA %>% select(date, steps) %>% 
+  
+  group_by(date) %>% summarise(totalSteps = sum(steps))
+
+ggplot(data = dailyStepsNoNAs, aes(x = totalSteps)) +
+  geom_histogram() +
+  labs(x = "Total Steps", y="Frequency")
+
+dStepsMeanNoNAs <- mean(dailyStepsNoNAs$totalSteps)
+dStepsMedianNoNAs <- median(dailyStepsNoNAs$totalSteps)
+
+```
+
+##### The number of missing values in the Interval colum is `r format(nbrNAs, nsmall = 3)` .
+
+##### The mean is `r format(dStepsMeanNoNAs, nsmall = 3)` .
+
+##### The median is `r format(dStepsMedianNoNAs, nsmall = 3)` .
+
+<br>
+
+##### THe difference between pre NA row removal and post were no NAs were removed but imputed. Is as follows:
+
+##### Pre Impute Mean: `r format(dStepsMean, nsmall = 3)`.
+##### Post Impute Mean:`r format(dStepsMeanNoNAs, nsmall = 3)`.
+
+<br>
+
+##### Pre Impute Median: `r format(dStepsMedian, nsmall = 3)`.
+##### Post Impute Median:`r format(dStepsMedianNoNAs, nsmall = 3)`.
+
+<br>
+
+##### The mean and median increased after the impute operation. 
+
+```{r echo=FALSE, results='hide', message=FALSE}
+# Create factor variable for plotting and aggregate the data. 
+
+dailyStepsNoNAs$day <- ifelse(weekdays(dailyStepsNoNAs$date) %in% c("Saturday", "Sunday"), "weekend", "weekday")
+dailyStepsNoNAs$day <- factor(dailyStepsNoNAs$day)
 
 
-## Are there differences in activity patterns between weekdays and weekends?
+```
+
