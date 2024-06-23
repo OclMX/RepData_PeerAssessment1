@@ -5,17 +5,14 @@ title: "Reproducible Research: Peer Assessment 1"
 output: 
   html_document:
     keep_md: true
+  
 ---
 
 
 
+```{r }
+# Checked in the files library. Now checking in the code.
 
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
-```
-
-```{r echo=TRUE, results='hide', message=FALSE}
 #loading libs to manipulate and display the data
 library(dplyr)
 library(ggplot2)
@@ -24,7 +21,7 @@ library(ggplot2)
 
 ## Loading and preprocessing the data
 
-```{r echo=TRUE, results='hide', message=FALSE}
+```{r }
 ## Data Exploration via Excel
 ## Create the necessary data sets to report out the questions
 
@@ -36,7 +33,7 @@ df <- read.csv("activity.csv", header = TRUE, colClasses = c("integer", "Date", 
 
 ## What is mean total number of steps taken per day?
 
-```{r echo=TRUE, results='hide', message=FALSE}
+```{r }
 
 
 
@@ -78,7 +75,7 @@ ggplot(data = dailySteps, aes(x = totalSteps)) +
 
 ## What is the average daily activity pattern?
 
-```{r echo=TRUE, results='hide', message=FALSE}
+```{r }
 # Calculate average steps per interval
 avgSteps <- df %>% select(date, steps, interval) %>% 
   group_by(interval) %>% summarise(avgSteps = mean(steps, na.rm = TRUE))
@@ -102,7 +99,7 @@ maxInterval <- avgSteps$interval[which.max(avgSteps$avgSteps)]
 
 <br>
 
-```{r echo=TRUE, results='hide', message=FALSE}
+```{r }
 
 #Simply get the sum of row with NAs
 
@@ -159,7 +156,7 @@ dStepsMedianNoNAs <- median(dailyStepsNoNAs$totalSteps)
 <br>
 
 ## Are there differences in activity patterns between weekdays and weekends?
-```{r echo=TRUE, results='hide', message=FALSE}
+```{r }
 # Create factor variable for plotting and aggregate the data. 
 
 dfMeanNA$day <- ifelse(weekdays(dailyStepsNoNAs$date) %in% c("Saturday", "Sunday"), "weekend", "weekday")

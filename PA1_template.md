@@ -5,18 +5,37 @@ title: "Reproducible Research: Peer Assessment 1"
 output: 
   html_document:
     keep_md: true
+  
 ---
 
 
 
 
-
-
-
-
 ```r
+# Checked in the files library. Now checking in the code.
+
 #loading libs to manipulate and display the data
 library(dplyr)
+```
+
+```
+## 
+## Attaching package: 'dplyr'
+```
+
+```
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+```
+
+```
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
 library(ggplot2)
 ```
 <br>
@@ -128,6 +147,10 @@ dailyStepsNoNAs <- dfMeanNA %>% select(date, steps, interval) %>%
 ggplot(data = dailyStepsNoNAs, aes(x = totalSteps)) +
   geom_histogram() +
   labs(x = "Total Steps", y="Frequency")
+```
+
+```
+## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
